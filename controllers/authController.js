@@ -36,7 +36,7 @@ export const signin = async (req, res, next) => {
     if (!email || !password) next(customError(403, 'provide credentials'));
 
     // 2) check if a user exists with that email address
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('-password');
     if (!user) return next(customError(404, ' user no found'));
 
     // 3) check if the password is correct
@@ -56,6 +56,9 @@ export const signin = async (req, res, next) => {
     return res.status(StatusCodes.OK).json({
       status: 'success',
       message: 'user successfully logged in',
+      data: {
+        user,
+      },
     });
   } catch (error) {
     next(error);
