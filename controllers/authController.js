@@ -3,6 +3,7 @@ import User from '../models/userModel.js';
 import { customError } from '../utils/customError.js';
 import { comparePassword, hashPassword } from '../utils/passwordUtils.js';
 import { createJWT } from '../utils/tokenUtils.js';
+import globalErrorHandlerMiddleware from '../middlewares/globalErrorHandlerMiddleware.js';
 
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -31,16 +32,16 @@ export const signin = async (req, res, next) => {
   const { email, password } = req.body;
 
   try {
-    // 1) check if email and apssword exist
-    if (!email || !password) throw new Error('provide credentials');
+    // 1) check if email and password exist
+    if (!email || !password) next(customError(403, 'provide credentials'));
 
     // 2) check if a user exists with that email address
     const user = await User.findOne({ email });
-    if (!user) throw new Error('there is no user wit that password');
+    if (!user) return next(customError(404, ' user no found'));
 
     // 3) check if the password is correct
     const correctPassword = comparePassword(password, user.password);
-    if (!correctPassword) throw new Error('Wrong credentials');
+    if (!correctPassword) return next(customError(401, 'Wrong credentials'));
 
     const token = createJWT({ id: user._id });
 
