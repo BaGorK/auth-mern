@@ -1,4 +1,5 @@
 import User from '../models/userModel.js';
+import { customError } from '../utils/customError.js';
 import { hashPassword } from '../utils/passwordUtils.js';
 
 export const signup = async (req, res, next) => {
@@ -20,6 +21,6 @@ export const signup = async (req, res, next) => {
       },
     });
   } catch (error) {
-    next(error);
+    next(customError(401, error?.message));
   }
 };
