@@ -2,6 +2,7 @@ import { StatusCodes } from 'http-status-codes';
 import User from '../models/userModel.js';
 import { customError } from '../utils/customError.js';
 import { comparePassword, hashPassword } from '../utils/passwordUtils.js';
+import { createJWT } from '../utils/tokenUtils.js';
 
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -41,8 +42,19 @@ export const signin = async (req, res, next) => {
     const correctPassword = comparePassword(password, user.password);
     if (!correctPassword) throw new Error('Wrong credentials');
 
+    const token = createJWT({ id: user._id });
+
+    const oneDay = 24 * 60 * 60 * 1000;
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      expires: new Date(Date.now() + oneDay),
+      secure: process.env.NODE_ENV === 'production',
+    });
+
     return res.status(StatusCodes.OK).json({
       status: 'success',
+      message: 'user successfully logged in',
     });
   } catch (error) {
     next(error);
