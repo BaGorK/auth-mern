@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 
 export default function Signup() {
   const [formData, setFormData] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -11,17 +13,27 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch('/api/v1/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify(formData),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    console.log(formData);
+    try {
+      setIsLoading(true);
+      const res = await fetch('/api/v1/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
+      console.log(data);
 
-    console.log(data);
+      setIsError(false);
+    } catch (error) {
+      console.log(error);
+      setIsError(true);
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -58,16 +70,20 @@ export default function Signup() {
           onChange={handleChange}
         />
 
-        <button className='bg-slate-700 p-3 rounded-lg text-white uppercase hover:opacity-85 disabled:opacity-75 duration-300'>
-          sign up
+        <button
+          disabled={isLoading}
+          className='bg-slate-700 p-3 rounded-lg text-white uppercase hover:opacity-85 disabled:opacity-75 duration-300'
+        >
+          {isLoading ? 'signing up...' : 'sign up'}
         </button>
       </form>
-      <div className='flex gap-4 py-4'>
+      <div className='flex gap-4 mt-4'>
         <p className='capitalize'>have an account?</p>
         <Link to='/signin'>
           <span className='text-blue-600'>Sign in</span>
         </Link>
       </div>
+      <p className='text-red-700 mt-4'>{isError && 'something went wrong'}</p>
     </div>
   );
 }
