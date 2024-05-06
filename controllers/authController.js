@@ -31,22 +31,25 @@ export const signup = async (req, res, next) => {
 export const signin = async (req, res, next) => {
   const { email, password } = req.body;
 
-  try {
-    // 1) check if email and password exist
-    if (!email || !password) next(customError(403, 'provide credentials'));
+  // 1) check if email and password exist
+  if (!email || !password) next(customError(403, 'provide credentials'));
 
+  try {
     // 2) check if a user exists with that email address
     const user = await User.findOne({ email }).select('-password');
+    // OR: const {password: hashedPassword, ...rest} = user._doc;
+
     if (!user) return next(customError(404, ' user no found'));
 
     // 3) check if the password is correct
     const correctPassword = comparePassword(password, user.password);
     if (!correctPassword) return next(customError(401, 'Wrong credentials'));
 
+    // 4) sign a new token
     const token = createJWT({ id: user._id });
 
     const oneDay = 24 * 60 * 60 * 1000;
-
+    // 5) send the token as a cookie
     res.cookie('token', token, {
       httpOnly: true,
       expires: new Date(Date.now() + oneDay),
