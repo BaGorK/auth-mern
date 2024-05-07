@@ -6,6 +6,7 @@ import {
   signInStart,
   signInSuccess,
 } from '../store/user/userSlice';
+import { OAuth } from '../components';
 
 export default function Signin() {
   const navigate = useNavigate();
@@ -78,6 +79,7 @@ export default function Signin() {
         >
           {loading ? 'signing in...' : 'sign in'}
         </button>
+        <OAuth />
       </form>
       <div className='flex gap-4 mt-4'>
         <p className='capitalize'>have no account?</p>
