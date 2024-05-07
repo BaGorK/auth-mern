@@ -12,7 +12,10 @@ export default function Signin() {
   const dispatch = useDispatch();
   const { loading, error } = useSelector((state) => state.user);
 
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    email: 'edmealem@gmail.com',
+    password: 'test1234',
+  });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -32,11 +35,11 @@ export default function Signin() {
       });
 
       const data = await res.json();
-      console.log(data);
+
       if (data.status === 'fail') {
         return dispatch(signInFailure(data?.message));
       }
-      dispatch(signInSuccess());
+      dispatch(signInSuccess(data?.data?.user));
       navigate('/');
     } catch (error) {
       console.log(error);
@@ -82,7 +85,11 @@ export default function Signin() {
           <span className='text-blue-600'>Sign up</span>
         </Link>
       </div>
-      <p className='text-red-700 mt-4'>{error && 'something went wrong'}</p>
+      {!error ? (
+        ''
+      ) : (
+        <p className='text-red-700 mt-4'>{error || 'something went wrong'}</p>
+      )}
     </div>
   );
 }
