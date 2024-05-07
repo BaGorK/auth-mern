@@ -36,17 +36,19 @@ export const signin = async (req, res, next) => {
 
   try {
     // 2) check if a user exists with that email address
-    const user = await User.findOne({ email })?.select('-password');
-    // OR: const {password: hashedPassword, ...rest} = user._doc;
+    const user = await User.findOne({ email });
 
     if (!user) return next(customError(404, 'user no found'));
 
     // 3) check if the password is correct
-    const correctPassword = comparePassword(password, user.password);
+    const correctPassword = await comparePassword(password, user.password);
     if (!correctPassword) return next(customError(401, 'Wrong credentials'));
 
     // 4) sign a new token
     const token = createJWT({ id: user._id });
+
+    // send the user
+    const { password: hashedPassword, ...userWithNoPassword } = user._doc;
 
     // 5) send the token as a cookie
     const oneDay = 24 * 60 * 60 * 1000;
@@ -61,7 +63,7 @@ export const signin = async (req, res, next) => {
       status: 'success',
       message: 'user successfully logged in',
       data: {
-        user,
+        user: userWithNoPassword,
       },
     });
   } catch (error) {
