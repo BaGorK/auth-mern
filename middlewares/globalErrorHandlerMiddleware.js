@@ -1,8 +1,9 @@
 const globalErrorHandlerMiddleware = (err, req, res, next) => {
   const statusCode = err.statusCode || 500;
-  const message = err.message || 'something went wrong';
+  const message = err.message || 'Internal Server Error';
 
-  const status = (statusCode + '').startsWith('4') ? 'failed' : 'error';
+  // 404 => fail && 500 => error
+  const status = (statusCode + '').startsWith('4') ? 'fail' : 'error';
 
   return res.status(statusCode).json({
     status,

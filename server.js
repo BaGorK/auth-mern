@@ -10,7 +10,7 @@ import { StatusCodes } from 'http-status-codes';
 
 const app = express();
 
-// DEVELOPMENT LOGGING MIDDELWARE
+// DEVELOPMENT LOGGING MIDDLEWARE
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }

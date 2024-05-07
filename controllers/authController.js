@@ -3,7 +3,6 @@ import User from '../models/userModel.js';
 import { customError } from '../utils/customError.js';
 import { comparePassword, hashPassword } from '../utils/passwordUtils.js';
 import { createJWT } from '../utils/tokenUtils.js';
-import globalErrorHandlerMiddleware from '../middlewares/globalErrorHandlerMiddleware.js';
 
 export const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
@@ -32,14 +31,14 @@ export const signin = async (req, res, next) => {
   const { email, password } = req.body;
 
   // 1) check if email and password exist
-  if (!email || !password) next(customError(403, 'provide credentials'));
+  if (!email || !password) next(customError(403, 'please provide credentials'));
 
   try {
     // 2) check if a user exists with that email address
-    const user = await User.findOne({ email }).select('-password');
+    const user = await User.findOne({ email })?.select('-password');
     // OR: const {password: hashedPassword, ...rest} = user._doc;
 
-    if (!user) return next(customError(404, ' user no found'));
+    if (!user) return next(customError(404, 'user no found'));
 
     // 3) check if the password is correct
     const correctPassword = comparePassword(password, user.password);
@@ -48,8 +47,9 @@ export const signin = async (req, res, next) => {
     // 4) sign a new token
     const token = createJWT({ id: user._id });
 
-    const oneDay = 24 * 60 * 60 * 1000;
     // 5) send the token as a cookie
+    const oneDay = 24 * 60 * 60 * 1000;
+
     res.cookie('token', token, {
       httpOnly: true,
       expires: new Date(Date.now() + oneDay),
