@@ -27,6 +27,9 @@ export default function Signin() {
 
       const data = await res.json();
       console.log(data);
+      if (data.status === 'fail') {
+        return setIsError(true);
+      }
       navigate('/');
       setIsError(false);
     } catch (error) {

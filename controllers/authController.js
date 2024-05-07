@@ -31,7 +31,8 @@ export const signin = async (req, res, next) => {
   const { email, password } = req.body;
 
   // 1) check if email and password exist
-  if (!email || !password) next(customError(403, 'please provide credentials'));
+  if (!email || !password)
+    return next(customError(403, 'please provide credentials'));
 
   try {
     // 2) check if a user exists with that email address
