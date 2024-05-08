@@ -14,10 +14,10 @@ export default function OAuth() {
       const result = await signInWithPopup(auth, provider);
 
       const { displayName, email, photoURL } = result.user;
-      const res = await fetch('/api/auth/google', {
+      const res = await fetch('/api/v1/auth/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: { username: displayName, email, photo: photoURL },
+        body: JSON.stringify({ username: displayName, email, photo: photoURL }),
       });
       const data = await res.json();
       dispatch(signInSuccess(data));

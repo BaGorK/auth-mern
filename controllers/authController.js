@@ -70,3 +70,9 @@ export const signin = async (req, res, next) => {
     next(error);
   }
 };
+
+export const google = async (req, res) => {
+  console.log(req.body);
+
+  return res.status(StatusCodes.OK).json({ message: 'sign in with google' });
+};
