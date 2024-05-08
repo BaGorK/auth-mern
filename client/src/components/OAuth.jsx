@@ -2,9 +2,11 @@ import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 import { firebaseApp } from '../services/firebase';
 import { useDispatch } from 'react-redux';
 import { signInSuccess } from '../store/user/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 export default function OAuth() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleGoogleClick = async () => {
     try {
@@ -17,10 +19,11 @@ export default function OAuth() {
       const res = await fetch('/api/v1/auth/google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: displayName, email, photo: photoURL }),
+        body: JSON.stringify({ name: displayName, email, photo: photoURL }),
       });
       const data = await res.json();
-      dispatch(signInSuccess(data));
+      dispatch(signInSuccess(data.data.user));
+      navigate('/');
     } catch (error) {
       console.error('could not login with google: ', error);
     }
