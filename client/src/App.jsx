@@ -8,6 +8,7 @@ import {
   Signin,
   Signup,
 } from './pages';
+import PrivateRoute from './components/PrivateRoute';
 
 const router = createBrowserRouter([
   {
@@ -24,8 +25,13 @@ const router = createBrowserRouter([
         element: <About />,
       },
       {
-        path: 'profile',
-        element: <Profile />,
+        element: <PrivateRoute />,
+        children: [
+          {
+            path: 'profile',
+            element: <Profile />,
+          },
+        ],
       },
       {
         path: 'signin',
