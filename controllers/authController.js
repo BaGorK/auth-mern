@@ -72,7 +72,36 @@ export const signin = async (req, res, next) => {
 };
 
 export const google = async (req, res) => {
-  console.log(req.body);
+  const { email, username, photo } = req.body;
+  try {
+    const user = User.findOne({ email });
+
+    if (user) {
+      // 1) create and send the jwt
+      const token = createJWT({ id: user._id });
+      // send the user
+      const { password: hashedPassword, ...userWithNoPassword } = user._doc;
+
+      // 5) send the token as a cookie
+      const oneDay = 24 * 60 * 60 * 1000;
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        expires: new Date(Date.now() + oneDay),
+        secure: process.env.NODE_ENV === 'production',
+      });
+
+      return res.status(StatusCodes.OK).json({
+        status: 'success',
+        message: 'user successfully logged in',
+        data: {
+          user: userWithNoPassword,
+        },
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
 
   return res.status(StatusCodes.OK).json({ message: 'sign in with google' });
 };
