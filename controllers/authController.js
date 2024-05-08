@@ -71,29 +71,59 @@ export const signin = async (req, res, next) => {
   }
 };
 
-export const google = async (req, res) => {
-  const { email, username, photo } = req.body;
+export const google = async (req, res, next) => {
+  const { email, name, photo } = req.body;
+
   try {
-    const user = User.findOne({ email });
+    const user = await User.findOne({ email });
 
     if (user) {
       // 1) create and send the jwt
       const token = createJWT({ id: user._id });
-      // send the user
-      const { password: hashedPassword, ...userWithNoPassword } = user._doc;
-
-      // 5) send the token as a cookie
-      const oneDay = 24 * 60 * 60 * 1000;
 
       res.cookie('token', token, {
         httpOnly: true,
-        expires: new Date(Date.now() + oneDay),
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
         secure: process.env.NODE_ENV === 'production',
       });
 
+      const { password, ...userWithNoPassword } = user._doc;
+
       return res.status(StatusCodes.OK).json({
         status: 'success',
-        message: 'user successfully logged in',
+        message: 'user successfully signed in',
+        data: {
+          user: userWithNoPassword,
+        },
+      });
+    } else {
+      const generatedPassword = Math.random().toString(36).slice(-8);
+      const hashedPassword = await hashPassword(generatedPassword);
+
+      // create user
+      let username = name.split(' ').join('').toLowerCase();
+
+      const newUser = await User.create({
+        email,
+        username,
+        password: hashedPassword,
+        profilePicture: photo,
+      });
+
+      // 1) create and send the jwt
+      const token = createJWT({ id: newUser._id });
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        secure: process.env.NODE_ENV === 'production',
+      });
+
+      const { password, ...userWithNoPassword } = newUser._doc;
+
+      return res.status(StatusCodes.OK).json({
+        status: 'success',
+        message: 'user successfully signed in',
         data: {
           user: userWithNoPassword,
         },
@@ -102,6 +132,4 @@ export const google = async (req, res) => {
   } catch (error) {
     next(error);
   }
-
-  return res.status(StatusCodes.OK).json({ message: 'sign in with google' });
 };
