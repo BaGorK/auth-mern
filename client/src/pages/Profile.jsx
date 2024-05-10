@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { firebaseApp } from '../services/firebase';
+import { getStorage } from 'firebase/storage';
 
 export default function Profile() {
   const { currentUser } = useSelector((state) => state.user);
@@ -13,7 +15,7 @@ export default function Profile() {
   }, [image]);
 
   const handleFileUpload = async (image) => {
-    console.log(image);
+    const storage = getStorage(firebaseApp);
   };
 
   return (
