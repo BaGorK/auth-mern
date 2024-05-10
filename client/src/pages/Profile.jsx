@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { firebaseApp } from '../services/firebase';
-import { getStorage } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 
 export default function Profile() {
   const { currentUser } = useSelector((state) => state.user);
@@ -15,7 +15,17 @@ export default function Profile() {
   }, [image]);
 
   const handleFileUpload = async (image) => {
+    console.log(image);
     const storage = getStorage(firebaseApp);
+    const fileName = Date.now() + image.name;
+
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, image);
+
+    uploadTask.on('state_changed', (snapshot) => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log(`Upload is ${Math.round(progress)}% done`);
+    });
   };
 
   return (
