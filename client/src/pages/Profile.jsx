@@ -1,10 +1,21 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 export default function Profile() {
-  const fileRef = useRef();
-
   const { currentUser } = useSelector((state) => state.user);
+  const fileRef = useRef();
+  const [image, setImage] = useState(undefined);
+
+  useEffect(() => {
+    if (image) {
+      handleFileUpload(image);
+    }
+  }, [image]);
+
+  const handleFileUpload = async (image) => {
+    console.log(image);
+  };
+
   return (
     <div className='max-w-lg mx-auto'>
       <h2 className='font-semibold text-3xl text-gray-500  my-7 text-center '>
