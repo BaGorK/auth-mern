@@ -16,7 +16,6 @@ export default function Profile() {
   const [imagePercent, setImagePercent] = useState(0);
   const [imageError, setImageError] = useState(false);
   const [formData, setFormData] = useState({});
-  console.log(formData);
 
   useEffect(() => {
     if (image) {
@@ -36,10 +35,9 @@ export default function Profile() {
       (snapshot) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log(`Upload is ${Math.round(progress)}% done`);
         setImagePercent(Math.round(progress));
       },
-      (error) => {
+      () => {
         setImageError(true);
       },
       () => {
@@ -69,6 +67,17 @@ export default function Profile() {
           className='h-24 w-24 rounded-full cursor-pointer object-cover mt-2 self-center'
           onClick={() => fileRef.current.click()}
         />
+        <p className='text-sm self-center'>
+          {imageError ? (
+            <span className='text-red-700 '> Error uploading image </span>
+          ) : imagePercent > 0 && imagePercent < 100 ? (
+            <span className='text-slate-600 '>{`Uploading: ${imagePercent}% done`}</span>
+          ) : imagePercent === 100 ? (
+            <span className='text-green-700 '>Image uploaded successfully</span>
+          ) : (
+            ''
+          )}
+        </p>
         <input
           type='text'
           placeholder='Username'
