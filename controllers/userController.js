@@ -29,7 +29,7 @@ export const updateUser = async (req, res, next) => {
 
     const { password, ...userWithOutPassword } = updatedUser._doc;
     res.status(StatusCodes.OK).json({
-      status: success,
+      status: 'success',
       message: 'update successful',
       data: {
         user: userWithOutPassword,
@@ -38,6 +38,4 @@ export const updateUser = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-
-  return res.json({ message: 'update user' });
 };
