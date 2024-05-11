@@ -48,12 +48,21 @@ export default function Profile() {
     );
   };
 
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(formData);
+  };
+
   return (
     <div className='max-w-lg mx-auto'>
       <h2 className='font-semibold text-3xl text-gray-500  my-7 text-center '>
         Profile
       </h2>
-      <form className='flex flex-col gap-4'>
+      <form className='flex flex-col gap-4' onSubmit={handleSubmit}>
         <input
           type='file'
           ref={fileRef}
@@ -84,19 +93,25 @@ export default function Profile() {
         <input
           type='text'
           placeholder='Username'
+          id='Username'
           defaultValue={currentUser.username}
           className='bg-slate-200 p-3 rounded-lg '
+          onChange={handleChange}
         />
         <input
           type='email'
+          id='email'
           placeholder='Email'
           defaultValue={currentUser.email}
           className='bg-slate-200 p-3 rounded-lg '
+          onChange={handleChange}
         />
         <input
           type='password'
           placeholder='Password'
+          id='Password'
           className='bg-slate-200 p-3 rounded-lg '
+          onChange={handleChange}
         />
         <button className='bg-slate-700 text-white p-3 rounded-lg uppercase  hover:opacity-85 disabled:opacity-75'>
           update
