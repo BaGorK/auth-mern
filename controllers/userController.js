@@ -8,8 +8,10 @@ export const getAllUsers = (req, res) => {
 };
 
 export const updateUser = async (req, res, next) => {
-  if (req.user.id !== req.params.id)
+  if (req.user.id !== req.params.id) {
     return next(customError(401, 'You can update only your account!'));
+  }
+
   try {
     if (req.body.password) {
       req.body.password = await hashPassword(req.body.password);

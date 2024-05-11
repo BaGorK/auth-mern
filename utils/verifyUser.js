@@ -12,7 +12,12 @@ export const verifyToken = async (req, res, next) => {
   const decoded = verifyJWT(token);
 
   if (req.params.id !== decoded.id) {
-    return next(customError(StatusCodes.BAD_REQUEST, 'token is invalid'));
+    return next(
+      customError(
+        StatusCodes.BAD_REQUEST,
+        'invalid id, you are not allowed to perform this action'
+      )
+    );
   }
 
   const user = await User.findById(req.params.id);
