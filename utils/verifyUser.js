@@ -1,18 +1,23 @@
 import { StatusCodes } from 'http-status-codes';
-import jwt from 'jsonwebtoken';
 import { customError } from './customError.js';
+import { verifyJWT } from './tokenUtils.js';
+import User from '../models/userModel.js';
 
-export const verifyToken = (req, res, next) => {
-  const { token } = req.cookie;
+export const verifyToken = async (req, res, next) => {
+  const { token } = req.cookies;
 
   if (!token)
     return next(customError(StatusCodes.BAD_REQUEST, 'You are not logged in'));
 
-  jwt.verify(token, token, process.env.JWT_SECRET, (err, user) => {
-    if (err)
-      return next(customError(StatusCodes.BAD_REQUEST, 'token is invalid'));
+  const decoded = verifyJWT(token);
 
-    req.user = user;
-    next();
-  });
+  if (req.params.id !== decoded.id) {
+    return next(customError(StatusCodes.BAD_REQUEST, 'token is invalid'));
+  }
+
+  const user = await User.findById(req.params.id);
+  if (!user) return next(customError(404, 'there is no user with that id'));
+  req.user = user;
+
+  next();
 };
