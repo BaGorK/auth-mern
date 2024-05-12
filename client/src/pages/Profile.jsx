@@ -63,7 +63,7 @@ export default function Profile() {
     e.preventDefault();
     try {
       dispatch(updateUserStart);
-      const res = await fetch('/api/v1/users/update', {
+      const res = await fetch(`/api/v1/users/update/${currentUser._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,6 +72,11 @@ export default function Profile() {
       });
 
       const data = await res.json();
+      console.log(data);
+
+      if (data.status === 'fail') {
+        return dispatch(updateUserFailure(data.message));
+      }
 
       dispatch(updateUserSuccess(data.data.user));
     } catch (error) {
