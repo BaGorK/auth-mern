@@ -16,6 +16,7 @@ export const updateUser = async (req, res, next) => {
     if (req.body.password) {
       req.body.password = await hashPassword(req.body.password);
     }
+    //FIXME: name update not working
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {

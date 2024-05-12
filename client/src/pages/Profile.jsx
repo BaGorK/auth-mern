@@ -120,7 +120,7 @@ export default function Profile() {
         <input
           type='text'
           placeholder='Username'
-          id='Username'
+          id='username'
           defaultValue={currentUser.username}
           className='bg-slate-200 p-3 rounded-lg '
           onChange={handleChange}
