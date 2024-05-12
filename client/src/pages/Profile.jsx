@@ -16,13 +16,15 @@ import {
 
 export default function Profile() {
   const dispatch = useDispatch();
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
   const fileRef = useRef();
 
   const [image, setImage] = useState(undefined);
   const [imagePercent, setImagePercent] = useState(0);
   const [imageError, setImageError] = useState(false);
   const [formData, setFormData] = useState({});
+
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
   useEffect(() => {
     if (image) {
@@ -62,7 +64,7 @@ export default function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      dispatch(updateUserStart);
+      dispatch(updateUserStart());
       const res = await fetch(`/api/v1/users/update/${currentUser._id}`, {
         method: 'POST',
         headers: {
@@ -72,13 +74,13 @@ export default function Profile() {
       });
 
       const data = await res.json();
-      console.log(data);
 
       if (data.status === 'fail') {
         return dispatch(updateUserFailure(data.message));
       }
 
       dispatch(updateUserSuccess(data.data.user));
+      setUpdateSuccess(true);
     } catch (error) {
       dispatch(updateUserFailure(error.message));
     }
@@ -140,8 +142,11 @@ export default function Profile() {
           className='bg-slate-200 p-3 rounded-lg '
           onChange={handleChange}
         />
-        <button className='bg-slate-700 text-white p-3 rounded-lg uppercase  hover:opacity-85 disabled:opacity-75'>
-          update
+        <button
+          disabled={loading}
+          className='bg-slate-700 text-white p-3 rounded-lg uppercase  hover:opacity-85 disabled:opacity-75'
+        >
+          {loading ? 'updating...' : 'update'}
         </button>
       </form>
       <div className='flex justify-between mt-4'>
@@ -150,6 +155,10 @@ export default function Profile() {
         </span>
         <span className='text-red-600 cursor-pointer capitalize'>sign out</span>
       </div>
+      <p className='text-red-700 mt-5'>{error && 'Something went wrong'}</p>
+      <p className='text-green-700 mt-5'>
+        {updateSuccess && 'user updated successfully!'}
+      </p>
     </div>
   );
 }
