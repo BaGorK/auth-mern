@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { firebaseApp } from '../services/firebase';
 import {
   getDownloadURL,
@@ -8,10 +8,17 @@ import {
   ref,
   uploadBytesResumable,
 } from 'firebase/storage';
+import {
+  updateUserFailure,
+  updateUserStart,
+  updateUserSuccess,
+} from '../store/user/userSlice';
 
 export default function Profile() {
+  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.user);
   const fileRef = useRef();
+
   const [image, setImage] = useState(undefined);
   const [imagePercent, setImagePercent] = useState(0);
   const [imageError, setImageError] = useState(false);
@@ -55,6 +62,7 @@ export default function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      dispatch(updateUserStart);
       const res = await fetch('/api/v1/users/update', {
         method: 'POST',
         headers: {
@@ -64,9 +72,10 @@ export default function Profile() {
       });
 
       const data = await res.json();
-      console.log(data);
+
+      dispatch(updateUserSuccess(data.data.user));
     } catch (error) {
-      console.log(error);
+      dispatch(updateUserFailure(error.message));
     }
   };
 
