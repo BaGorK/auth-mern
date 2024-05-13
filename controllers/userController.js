@@ -42,3 +42,10 @@ export const updateUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const deleteUser = async (req, res, next) => {
+  return res.status(StatusCodes.OK).json({
+    status: 'success',
+    message: 'user deleted successfully',
+  });
+};
