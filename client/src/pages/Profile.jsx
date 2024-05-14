@@ -9,6 +9,9 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import {
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
   updateUserFailure,
   updateUserStart,
   updateUserSuccess,
@@ -86,7 +89,22 @@ export default function Profile() {
     }
   };
 
-  const handleDeleteAccount =async (e) => {};
+  const handleDeleteAccount = async (e) => {
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/users/delete/${currentUser._id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+
+      if (data.status !== 'success') {
+        return dispatch(deleteUserFailure(data.message));
+      }
+      dispatch(deleteUserSuccess());
+    } catch (error) {
+      dispatch(deleteUserFailure(error?.message));
+    }
+  };
 
   return (
     <div className='max-w-lg mx-auto'>
