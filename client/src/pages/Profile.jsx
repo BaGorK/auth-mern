@@ -86,6 +86,8 @@ export default function Profile() {
     }
   };
 
+  const handleDeleteAccount =async (e) => {};
+
   return (
     <div className='max-w-lg mx-auto'>
       <h2 className='font-semibold text-3xl text-gray-500  my-7 text-center '>
@@ -150,7 +152,10 @@ export default function Profile() {
         </button>
       </form>
       <div className='flex justify-between mt-4'>
-        <span className='text-red-600 cursor-pointer capitalize'>
+        <span
+          onClick={handleDeleteAccount}
+          className='text-red-600 cursor-pointer capitalize'
+        >
           delete account
         </span>
         <span className='text-red-600 cursor-pointer capitalize'>sign out</span>
