@@ -58,3 +58,10 @@ export const deleteUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const signout = async (req, res, next) => {
+  return res.status(StatusCodes.OK).json({
+    status: 'success',
+    message: 'signed out successfully',
+  });
+};
