@@ -4,6 +4,11 @@ import authRouter from './routes/authRoutes.js';
 import globalErrorHandlerMiddleware from './middlewares/globalErrorHandlerMiddleware.js';
 import { StatusCodes } from 'http-status-codes';
 import cookieParser from 'cookie-parser';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
@@ -11,6 +16,8 @@ const app = express();
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+app.use(express.static(path.resolve(__dirname, './client/dist')));
 
 // BODY PARSER
 app.use(cookieParser());
