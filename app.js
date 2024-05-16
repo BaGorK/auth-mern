@@ -32,6 +32,10 @@ app.get('/api/v1/test', (req, res) => {
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
 
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, './client/dist', 'index.html'));
+});
+
 // UNHANDLED ROUTES
 app.use('*', (req, res) => {
   return res
