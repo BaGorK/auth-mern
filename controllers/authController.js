@@ -9,6 +9,12 @@ export const signup = async (req, res, next) => {
   const hashedPassword = await hashPassword(password);
 
   try {
+    // 2) check if a user exists with that email address
+    const user = await User.findOne({ email });
+    if (user) {
+      return next(customError(403, 'user exists.'));
+    }
+
     const newUser = await User.create({
       username,
       email,

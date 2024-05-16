@@ -3,7 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { OAuth } from '../components';
 
 export default function Signup() {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    username: 'edmealem',
+    email: 'edmealem@gmail.com',
+    password: 'test1234',
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
@@ -16,9 +20,9 @@ export default function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
     try {
       setIsLoading(true);
+      setIsError(false);
       const res = await fetch('/api/v1/auth/signup', {
         method: 'POST',
         headers: {
@@ -28,15 +32,16 @@ export default function Signup() {
       });
 
       const data = await res.json();
-      console.log(data);
+      if (data.status !== 'success') {
+        return setIsError(data?.message || true);
+      }
       navigate('/signin');
       setIsError(false);
     } catch (error) {
-      console.log(error);
       setIsError(true);
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
@@ -87,7 +92,9 @@ export default function Signup() {
           <span className='text-blue-600'>Sign in</span>
         </Link>
       </div>
-      <p className='text-red-700 mt-4'>{isError && 'something went wrong'}</p>
+      <p className='text-red-700 mt-4'>
+        {isError ? isError : isError && 'something went wrong'}
+      </p>
     </div>
   );
 }
